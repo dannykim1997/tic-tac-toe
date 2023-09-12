@@ -39,7 +39,9 @@ const Game = (() => {
         gameOver = false;
         GameBoard.render();
     }
-
+    const handleClick = (event) => {
+        
+    }
     return {
         start
     }
