@@ -40,10 +40,13 @@ const Game = (() => {
         GameBoard.render();
     }
     const handleClick = (event) => {
-        
+        let index = parseInt(event.target.id.split("-")[1]);
+        console.log(index);
+
     }
     return {
-        start
+        start,
+        handleClick
     }
 })();
 
