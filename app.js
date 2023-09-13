@@ -13,8 +13,17 @@ const GameBoard = (() => {
         })
     }
 
+    const update = (index, value) => {
+        gameboard[index] = value;
+        render();
+    }
+
+    const getGameBoard = () => gameboard;
+
     return {
-        render
+        render,
+        update,
+        getGameBoard
     }
 })();
 
@@ -38,11 +47,16 @@ const Game = (() => {
         currentPlayerIndex = 0;
         gameOver = false;
         GameBoard.render();
+        const squares = document.querySelectorAll(".square");
+        squares.forEach((square) => {
+            square.addEventListener("click", handleClick);
+        })
     }
     const handleClick = (event) => {
         let index = parseInt(event.target.id.split("-")[1]);
-        console.log(index);
+        GameBoard.update(index, players[currentPlayerIndex].mark);
 
+        currentPlayerIndex = currentPlayerIndex === 0 ? 1 : 0;
     }
     return {
         start,
