@@ -52,19 +52,45 @@ const Game = (() => {
             square.addEventListener("click", handleClick);
         })
     }
+
     const handleClick = (event) => {
         let index = parseInt(event.target.id.split("-")[1]);
+
+        if (GameBoard.getGameBoard()[index] !== "") {
+            return;
+        }
+
         GameBoard.update(index, players[currentPlayerIndex].mark);
 
+        if (checkForWin(GameBoard.getGameBoard(), players[currentPlayerIndex].mark)) {
+            gameOver = true;
+            console.log(`${players[currentPlayerIndex].name} won!`)
+        }
+
         currentPlayerIndex = currentPlayerIndex === 0 ? 1 : 0;
+        
     }
+
+    const restart = () => {
+        for (let i=0; i<9; i++) {
+            GameBoard.update(i, "");
+        }
+        Gameboard.render();
+    }
+
     return {
         start,
-        handleClick
+        handleClick,
+        restart
     }
 })();
 
 const startButton = document.querySelector("#start-button");
 startButton.addEventListener("click", () => {
     Game.start();
+})
+
+const restartButton = document.querySelector("#restart-button");
+restartButton.addEventListener("click", () => {
+    Game.restart();
 })
