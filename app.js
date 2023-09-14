@@ -1,13 +1,26 @@
+const displayController = (() => {
+    const renderMessage = (message) => {
+        document.querySelector("#message").innerHTML = message;
+    }
+    return {
+        renderMessage
+    }
+})();
+
 const GameBoard = (() => {
     let gameboard = ["", "", "", "", "", "", "", "", ""]
 
     const render = () => {
         let boardHTML = "";
+
         gameboard.forEach((square, index) => {
             boardHTML += `<div class="square" id="square-${index}">${square}</div>`
         })
+
         document.querySelector("#gameboard").innerHTML = boardHTML;
+
         const squares = document.querySelectorAll(".square");
+
         squares.forEach((square) => {
             square.addEventListener("click", Game.handleClick);
         })
@@ -54,6 +67,9 @@ const Game = (() => {
     }
 
     const handleClick = (event) => {
+        if (gameOver) {
+            return;
+        }
         let index = parseInt(event.target.id.split("-")[1]);
 
         if (GameBoard.getGameBoard()[index] !== "") {
@@ -64,18 +80,23 @@ const Game = (() => {
 
         if (checkForWin(GameBoard.getGameBoard(), players[currentPlayerIndex].mark)) {
             gameOver = true;
-            console.log(`${players[currentPlayerIndex].name} won!`)
+            displayController.renderMessage(`${players[currentPlayerIndex].name} won!`);
+        } 
+        else if (checkForTie(GameBoard.getGameBoard())) {
+            gameOver = true;
+            displayController.renderMessage(`It's a tie!`);
         }
 
         currentPlayerIndex = currentPlayerIndex === 0 ? 1 : 0;
-        
     }
 
     const restart = () => {
         for (let i=0; i<9; i++) {
             GameBoard.update(i, "");
         }
-        Gameboard.render();
+        GameBoard.render();
+        gameOver = false;
+        document.querySelector("#message").innerHTML = "";
     }
 
     return {
@@ -94,3 +115,28 @@ const restartButton = document.querySelector("#restart-button");
 restartButton.addEventListener("click", () => {
     Game.restart();
 })
+
+function checkForWin(board) {
+    let winningCombination = [
+        [0,1,2],
+        [3,4,5],
+        [6,7,8],
+        [0,3,6],
+        [1,4,7],
+        [2,5,8],
+        [0,4,8],
+        [2,4,6]
+    ]
+
+    for (let i=0; i<winningCombination.length; i++) {
+        const [a,b,c] = winningCombination[i];
+        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function checkForTie(board) {
+    return board.every(cell => cell !== "")
+}
